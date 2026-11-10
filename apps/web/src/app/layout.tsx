@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Hanken_Grotesk, IBM_Plex_Mono, Newsreader } from "next/font/google";
 
 import { BeeIntro } from "@/components/brand/bee-intro";
@@ -52,8 +51,6 @@ export default function RootLayout({
       <body className="min-h-full antialiased">
         <Providers>{children}</Providers>
         <BeeIntro />
-        <Script src="/voice-assistant.js" strategy="afterInteractive" data-site="melyia" data-currency="BHD"
-          data-endpoint="http://127.0.0.1:8000/api/assistant" data-pilot="true" />
       </body>
     </html>
   );

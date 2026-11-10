@@ -26,22 +26,19 @@ interface ContentSecurityPolicyOptions {
   readonly apiOrigin: string;
   readonly authEmulatorOrigin?: string;
   readonly isDevelopment: boolean;
-  readonly voicePilot?: boolean;
 }
 
 export const buildContentSecurityPolicy = ({
   apiOrigin: allowedApiOrigin,
   authEmulatorOrigin: allowedAuthEmulatorOrigin,
   isDevelopment: developmentMode,
-  voicePilot = false,
 }: ContentSecurityPolicyOptions): string => [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${developmentMode ? " 'unsafe-eval'" : ""} https://www.gstatic.com https://www.google.com https://www.recaptcha.net`,
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: https://firebasestorage.googleapis.com${developmentMode ? " http://127.0.0.1:9199 http://localhost:9199" : ""}`,
   "font-src 'self' data:",
-  ...(voicePilot ? ["media-src 'self' blob:"] : []),
-  `connect-src 'self' ${allowedApiOrigin}${voicePilot ? " http://127.0.0.1:8000" : ""}${developmentMode && allowedAuthEmulatorOrigin ? ` ${allowedAuthEmulatorOrigin}` : ""} https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com${developmentMode ? " ws: wss:" : ""}`,
+  `connect-src 'self' ${allowedApiOrigin}${developmentMode && allowedAuthEmulatorOrigin ? ` ${allowedAuthEmulatorOrigin}` : ""} https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com${developmentMode ? " ws: wss:" : ""}`,
   "frame-src https://www.google.com https://www.recaptcha.net https://*.firebaseapp.com",
   "worker-src 'self' blob:",
   "object-src 'none'",
@@ -83,14 +80,6 @@ const nextConfig: NextConfig = {
           },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
           { key: "X-DNS-Prefetch-Control", value: "off" },
-        ],
-      },
-      {
-        source: "/:path*",
-        has: [{ type: "query", key: "voice-test", value: "1" }],
-        headers: [
-          { key: "Content-Security-Policy", value: buildContentSecurityPolicy({ apiOrigin, authEmulatorOrigin, isDevelopment, voicePilot: true }) },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(), payment=(), usb=()" },
         ],
       },
     ];

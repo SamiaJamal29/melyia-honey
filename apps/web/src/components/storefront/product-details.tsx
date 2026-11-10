@@ -15,7 +15,7 @@ export function ProductDetails({ product }: { readonly product: StoreProduct }) 
   const translatedName = t(product.name);
 
   return (
-    <div data-voice-context={`Product: ${product.name} | ${translatedName} | ${product.category} | ${formatMoney(product.retailPriceSen)} | ${t(product.origin)} | ${product.weightGrams}g | ${product.shortDescription}`} className="container-shell grid gap-10 py-10 md:grid-cols-2 md:items-center md:py-20">
+    <div className="container-shell grid gap-10 py-10 md:grid-cols-2 md:items-center md:py-20">
       <div className="honeycomb-pattern relative aspect-square overflow-hidden rounded-2xl">
         {product.imageUrls?.[0] ? <img src={product.imageUrls[0]} alt={translatedName} className="h-full w-full object-cover" /> : <><div className="absolute inset-[15%] rounded-full bg-gold/15" /><HoneyJar tone={product.tone} className="absolute inset-x-[26%] bottom-5 top-10" /></>}
         {product.photoCredit && <a href={product.photoCredit.href} target="_blank" rel="noreferrer" className="absolute bottom-3 start-3 rounded-md bg-dark/85 px-2.5 py-1.5 text-[10px] text-cream/75 backdrop-blur-sm">{product.photoCredit.label}</a>}

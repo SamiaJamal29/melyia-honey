@@ -15,7 +15,7 @@ export function ProductCard({ product }: { readonly product: StoreProduct }) {
   const { t } = usePreferences();
   const translatedName = t(product.name);
   return (
-    <article data-voice-context={`Product: ${product.name} | ${translatedName} | ${product.category} | ${formatMoney(product.retailPriceSen)} | ${t(product.origin)} | ${product.weightGrams}g | ${product.shortDescription}`} className="group overflow-hidden rounded-2xl border border-line bg-surface">
+    <article className="group overflow-hidden rounded-2xl border border-line bg-surface">
       <div className="relative">
         <Link
           href={`/shop/${product.slug}`}
@@ -30,7 +30,7 @@ export function ProductCard({ product }: { readonly product: StoreProduct }) {
       <div className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <Link data-voice-product={product.slug} data-voice-label={product.name} href={`/shop/${product.slug}`} className="font-display text-2xl leading-tight hover:text-gold">
+            <Link href={`/shop/${product.slug}`} className="font-display text-2xl leading-tight hover:text-gold">
               {translatedName}
             </Link>
             <p className="mt-1 text-sm text-muted">{t(product.origin)} · {product.weightGrams}g</p>

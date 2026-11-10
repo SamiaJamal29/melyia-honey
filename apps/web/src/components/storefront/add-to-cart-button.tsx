@@ -16,8 +16,6 @@ export function AddToCartButton({
   const { t } = usePreferences();
   return (
     <Button
-      data-voice={`cart:${product.slug}`}
-      data-voice-label={`Add one ${product.name} to cart`}
       className={className}
       onClick={() =>
         addItem({

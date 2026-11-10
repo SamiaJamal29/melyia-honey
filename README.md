@@ -1,64 +1,92 @@
-# Melyia Commerce
+<div align="center">
 
-Responsive Malaysian honey commerce platform with three portals:
+# 🍯 Melyia
 
-- Storefront: catalog, product details, local cart, and a local-only simulated checkout.
-- Admin console: Firestore-backed order, inventory, user, reseller, and product operations.
-- Reseller program: immediate company registration, server-owned pricing tiers, catalog pricing, and company orders.
+**A honey storefront with an admin console and a reseller portal.**
 
-The visual system is translated from `Melyia honey brand and web design/`: warm cream/gold editorial storefront, cool gray admin console, and a dark/gold partner portal. A bee flies across the screen once per browser session and is skipped when reduced motion is requested.
+Single-origin Malaysian honey — Tualang, Kelulut, Gelam and Acacia — cold-extracted and delivered from trusted local harvests.
 
-## Important checkout behavior
+[Live site](https://melyia-honey.byduty.workers.dev) · [Design spec](docs/superpowers/specs/2026-07-15-melyia-commerce-platform-design.md) · [Security](SECURITY.md)
 
-Customer checkout is deliberately local-only. It:
+![Next.js](https://img.shields.io/badge/Next.js-16-black) ![React](https://img.shields.io/badge/React-19-61dafb) ![Tailwind](https://img.shields.io/badge/Tailwind-4-38bdf8) ![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-ffca28) ![pnpm](https://img.shields.io/badge/pnpm-workspace-f69220)
 
-1. Reads the cart from browser `localStorage`.
-2. Waits two seconds after “Simulate payment”.
-3. Creates a temporary receipt in browser `sessionStorage`.
-4. Clears the local cart and shows “Payment Successful”.
+</div>
 
-It does **not** call Express, Firestore, Firebase Storage, or a payment provider. These demo receipts never appear in the admin or reseller order lists. Firestore order records are managed through trusted admin/seed workflows.
+---
 
-## Stack
+## Highlights
 
-- `apps/web`: Next.js 16 App Router, React 19, Tailwind CSS 4, shadcn-style source components, Firebase Auth.
-- `apps/api`: Node/Express 5, Zod, Firebase Admin SDK, Helmet, strict CORS, rate limits.
-- Firebase: Auth, Firestore, Storage, App Check support, local emulators.
-- Workspace: pnpm monorepo.
+- **Three portals, one codebase** — a warm cream-and-gold storefront, a cool gray admin console, and a dark-gold reseller portal.
+- **Bilingual** — Arabic (RTL) and English (LTR) with a light/dark theme, remembered per browser.
+- **Reseller program** — company registration with server-owned pricing tiers and company-only catalog prices.
+- **Admin console** — orders, inventory, users, resellers and products.
+- **Locked-down by default** — browsers never touch Firestore or Storage directly. Every read and write goes through an Express API that verifies the token and role first.
+- **Demo checkout** — customer checkout is simulated and local-only (see below).
+- **Polish** — a bee flies across the screen once per session, skipped when the visitor prefers reduced motion.
 
-## Collections
+## Tech stack
 
-| Collection | Purpose | Authority |
+| Layer | Choice |
+| --- | --- |
+| Web (`apps/web`) | Next.js 16 App Router, React 19, Tailwind CSS 4, shadcn-style components |
+| API (`apps/api`) | Node, Express 5, Zod validation, Helmet, strict CORS, rate limiting |
+| Data and auth | Firebase Auth, Firestore, Storage, App Check, Admin SDK |
+| Hosting | Cloudflare Workers via OpenNext |
+| Tooling | pnpm workspace, TypeScript, ESLint, Vitest, Firebase emulators |
+
+## How checkout works
+
+Checkout is deliberately a demo. When a customer clicks **Simulate payment**, the app:
+
+1. reads the cart from `localStorage`,
+2. waits two seconds,
+3. writes a temporary receipt to `sessionStorage`,
+4. clears the cart and shows **Payment Successful**.
+
+It never calls the API, Firestore, Storage or a payment provider, and demo receipts never appear in admin or reseller order lists. Real order records are created through trusted admin or seed workflows.
+
+## Data model
+
+| Collection | Purpose | Access |
 | --- | --- | --- |
-| `products` | Catalog content and retail prices | Public API read; admin API write |
-| `orders` | Admin-managed customer/reseller records | Owner/admin API read; admin API update/delete |
-| `users` | Email, display profile, active state, role | Self API read; admin API management |
-| `resellers` | Company, tier, server discount, status | Self/admin API access |
-| `inventory` | Per-product quantity and threshold | Admin API only |
+| `products` | Catalog content and retail prices | Public read, admin write (via API) |
+| `orders` | Customer and reseller order records | Owner or admin read, admin update/delete |
+| `users` | Profile, active state, role | Self read, admin manage |
+| `resellers` | Company, tier, discount, status | Self or admin |
+| `inventory` | Quantity and low-stock threshold | Admin only |
 
-All direct browser Firestore and Storage access is denied. The Express API uses the Admin SDK only after token and role checks.
+## Routes
 
-## Local setup
+| Area | Paths |
+| --- | --- |
+| Storefront | `/`, `/shop`, `/shop/[slug]`, `/cart`, `/checkout` |
+| Account | `/login`, `/signup`, `/account` |
+| Admin | `/admin` |
+| Reseller | `/reseller/register`, `/reseller` |
 
-Requirements: Node.js 20+, pnpm 10+, and Java 21+ for Firebase emulator tests.
+## Getting started
+
+**Requirements:** Node.js 20+, pnpm 10+, and Java 21+ (only for the Firebase emulator tests).
 
 ```bash
+git clone https://github.com/SamiaJamal29/melyia-honey.git
+cd melyia-honey
 pnpm install
 cp .env.example .env.local
 ```
 
-Create a Firebase project, then:
+### 1. Set up Firebase
 
-1. Enable Email/Password in Firebase Authentication.
-2. Configure the email verification template.
-3. Create Firestore and a Storage bucket in a Malaysian/nearby region appropriate for the business.
-4. Register a web app and copy its public values into `.env.local`.
-5. Create a reCAPTCHA Enterprise key for Firebase App Check and set `NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY`.
-6. For the API, use Application Default Credentials or set `GOOGLE_APPLICATION_CREDENTIALS` to a service-account JSON file stored **outside** the repository.
+1. Create a Firebase project and enable **Email/Password** sign-in.
+2. Create Firestore and a Storage bucket in a region close to your customers.
+3. Register a web app and copy its public values into `.env.local`.
+4. Create a reCAPTCHA Enterprise key for App Check and set `NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY`.
+5. For the API, use Application Default Credentials, or point `GOOGLE_APPLICATION_CREDENTIALS` at a service-account JSON stored **outside** this repo.
 
-Required production values:
+### 2. Configure the environment
 
 ```dotenv
+# Web (public)
 NEXT_PUBLIC_SITE_URL=https://your-domain.example
 NEXT_PUBLIC_API_URL=https://api.your-domain.example
 NEXT_PUBLIC_FIREBASE_API_KEY=...
@@ -68,6 +96,7 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
 NEXT_PUBLIC_FIREBASE_APP_ID=...
 NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY=...
 
+# API (server only)
 FIREBASE_PROJECT_ID=...
 FIREBASE_STORAGE_BUCKET=...
 WEB_ORIGIN=https://your-domain.example
@@ -76,62 +105,64 @@ REQUIRE_ADMIN_MFA=true
 REQUIRE_VERIFIED_EMAIL=true
 ```
 
-Never expose a service-account private key through a `NEXT_PUBLIC_*` variable.
+> Never put a service-account key in a `NEXT_PUBLIC_*` variable.
 
-### Seed catalog and create the first admin
+### 3. Seed the catalog and create the first admin
 
-The admin bootstrap is intentionally a trusted command, not a web route. The Firebase Auth user must already exist and should have a verified email plus MFA before production use.
+Admin bootstrap is a trusted command, not a web route. The Firebase Auth user must already exist, ideally with a verified email and MFA.
 
 ```bash
 ADMIN_UID='firebase-auth-uid' \
-ADMIN_EMAIL='admin@example.my' \
+ADMIN_EMAIL='admin@example.com' \
 ADMIN_DISPLAY_NAME='Melyia Admin' \
 pnpm --filter @melyia/api bootstrap-admin
 
 pnpm --filter @melyia/api seed
 ```
 
-### Run
+### 4. Run it
 
 ```bash
 pnpm dev
 ```
 
-- Web: `http://localhost:3000`
-- API: `http://127.0.0.1:4000`
-- API health: `http://127.0.0.1:4000/health`
+| Service | URL |
+| --- | --- |
+| Web | http://localhost:3000 |
+| API | http://127.0.0.1:4000 |
+| API health | http://127.0.0.1:4000/health |
 
-For emulator development, start Firebase separately and export the Admin SDK emulator host variables before starting the API:
+To develop against the emulators, run `pnpm exec firebase emulators:start` and export the Admin SDK emulator host variables before starting the API.
 
-```bash
-pnpm exec firebase emulators:start
-```
-
-## Verification
+## Quality checks
 
 ```bash
 pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
-pnpm test:rules
+pnpm test:rules   # emulators confirm all direct browser access is denied
 ```
 
-`pnpm test:rules` starts isolated Firestore and Storage emulators and verifies that all direct browser access is denied.
+## Deploying
 
-## Portal routes
+- **Web (Cloudflare):** `pnpm --filter @melyia/web deploy:cloudflare`
+- **Rules:** deploy `firestore.rules` and `storage.rules` before exposing the project.
+- Serve web and API over HTTPS only, and set `WEB_ORIGIN` to the exact storefront origin (never `*`).
+- Keep `ENFORCE_APP_CHECK`, `REQUIRE_ADMIN_MFA` and `REQUIRE_VERIFIED_EMAIL` on in production.
+- Give the API service account the minimum Google Cloud roles it needs, and keep logs free of ID tokens.
+- Run dependency scanning in CI. pnpm's built-in audit relies on an npm endpoint that has been retired, so use an OSV or bulk-advisory scanner instead.
 
-- Storefront: `/`, `/shop`, `/shop/[slug]`, `/cart`, `/checkout`
-- Account: `/login`, `/signup`, `/account`
-- Admin: `/admin`
-- Reseller: `/reseller/register`, `/reseller`
+## Project layout
 
-## Deployment notes
+```text
+apps/
+  web/   Next.js storefront, account, admin and reseller UI
+  api/   Express API, Zod domain models, seed and bootstrap scripts
+docs/    design spec and implementation plan
+firestore.rules · storage.rules · firebase.json
+```
 
-- Deploy web and API behind HTTPS only.
-- Set `WEB_ORIGIN` to the exact storefront origin; do not use `*`.
-- Keep `ENFORCE_APP_CHECK`, `REQUIRE_ADMIN_MFA`, and `REQUIRE_VERIFIED_EMAIL` enabled in production.
-- Deploy `firestore.rules` and `storage.rules` before exposing the project.
-- Restrict the API service account to the minimum Google Cloud/Firebase roles required.
-- Keep API and Firebase logs free of ID tokens and service-account material.
-- Run dependency/advisory scanning in CI. At the time of this build, pnpm's audit call returned HTTP 410 from npm's retired audit endpoint, so CI should use a maintained bulk-advisory or OSV scanner.
+## Security
+
+Report vulnerabilities as described in [SECURITY.md](SECURITY.md). Please don't open public issues for them.
