@@ -14,6 +14,8 @@ Single-origin Malaysian honey — Tualang, Kelulut, Gelam and Acacia — cold-ex
 
 ---
 
+> **Live demo note:** the Vercel deployment serves the storefront only. Sign-in, accounts, admin and reseller features need Firebase keys and the API (see *Getting started*).
+
 ## Highlights
 
 - **Three portals, one codebase** — a warm cream-and-gold storefront, a cool gray admin console, and a dark-gold reseller portal.
@@ -31,7 +33,7 @@ Single-origin Malaysian honey — Tualang, Kelulut, Gelam and Acacia — cold-ex
 | Web (`apps/web`) | Next.js 16 App Router, React 19, Tailwind CSS 4, shadcn-style components |
 | API (`apps/api`) | Node, Express 5, Zod validation, Helmet, strict CORS, rate limiting |
 | Data and auth | Firebase Auth, Firestore, Storage, App Check, Admin SDK |
-| Hosting | Cloudflare Workers via OpenNext |
+| Hosting | Vercel (live demo); Cloudflare Workers via OpenNext also supported |
 | Tooling | pnpm workspace, TypeScript, ESLint, Vitest, Firebase emulators |
 
 ## How checkout works
