@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Product uploads are accepted only by the admin-only Express endpoint,
+    // after size, MIME, and file-signature validation.
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // All browser access is deliberately denied. The Express API uses the
+    // Firebase Admin SDK (which bypasses rules) after token and role checks.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

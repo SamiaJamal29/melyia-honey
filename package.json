@@ -1,0 +1,17 @@
+{
+  "name": "melyia-commerce",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.30.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @melyia/web --filter @melyia/api dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:rules": "firebase emulators:exec --only firestore,storage \"pnpm --filter @melyia/api exec vitest run tests/firebase-rules.test.ts\""
+  },
+  "devDependencies": {
+    "firebase-tools": "^15.23.0"
+  }
+}
