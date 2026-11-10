@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cloudflare": "NEXT_PUBLIC_SITE_URL=https://melyia-honey.byduty.workers.dev NEXT_PUBLIC_API_URL=https://melyia-honey.byduty.workers.dev opennextjs-cloudflare build",
+    "build:cloudflare": "opennextjs-cloudflare build",
     "deploy:cloudflare": "pnpm run build:cloudflare && opennextjs-cloudflare deploy",
     "start": "next start",
     "lint": "eslint",

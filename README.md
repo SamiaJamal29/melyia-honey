@@ -6,7 +6,7 @@
 
 Single-origin Malaysian honey — Tualang, Kelulut, Gelam and Acacia — cold-extracted and delivered from trusted local harvests.
 
-[Live site](https://melyia-honey.byduty.workers.dev) · [Design spec](docs/superpowers/specs/2026-07-15-melyia-commerce-platform-design.md) · [Security](SECURITY.md)
+[Live site](https://melyia-honey.vercel.app) · [Design spec](docs/superpowers/specs/2026-07-15-melyia-commerce-platform-design.md) · [Security](SECURITY.md)
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black) ![React](https://img.shields.io/badge/React-19-61dafb) ![Tailwind](https://img.shields.io/badge/Tailwind-4-38bdf8) ![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-ffca28) ![pnpm](https://img.shields.io/badge/pnpm-workspace-f69220)
 
@@ -146,7 +146,8 @@ pnpm test:rules   # emulators confirm all direct browser access is denied
 
 ## Deploying
 
-- **Web (Cloudflare):** `pnpm --filter @melyia/web deploy:cloudflare`
+- **Web (Vercel, free Hobby):** from `apps/web`, run `vercel deploy --prod`. `apps/web/vercel.json` sets the install command.
+- **Web (Cloudflare, optional):** log in with `npx wrangler login`, then run `NEXT_PUBLIC_SITE_URL=https://<your-worker-url> NEXT_PUBLIC_API_URL=https://<your-api-url> pnpm --filter @melyia/web deploy:cloudflare`
 - **Rules:** deploy `firestore.rules` and `storage.rules` before exposing the project.
 - Serve web and API over HTTPS only, and set `WEB_ORIGIN` to the exact storefront origin (never `*`).
 - Keep `ENFORCE_APP_CHECK`, `REQUIRE_ADMIN_MFA` and `REQUIRE_VERIFIED_EMAIL` on in production.
